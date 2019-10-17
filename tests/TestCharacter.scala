@@ -9,26 +9,6 @@ class TestCharacter extends FunSuite {
     Math.abs(x1 - x2) < EPSILON
   }
 
-  test("takeDamage") {
-    val characterOne = new Character("Bob", 10, 10, 10, 10, 10, 10)
-    characterOne.takeDamage(5)
-    assert(characterOne.isAlive, "Character should be alive")
-    assert(characterOne.currentHP == 5, "Character HP is wrong")
-
-    characterOne.takeDamage(5)
-    assert(!characterOne.isAlive, "Character should be dead")
-    assert(characterOne.currentHP == 0, "Character HP is wrong")
-
-    characterOne.takeDamage(1)
-    assert(!characterOne.isAlive, "Character should be dead")
-    assert(characterOne.currentHP == -1, "Character HP is wrong")
-
-    val characterTwo = new Character("Billy",10, 10, 10, 10, 10, 10)
-    characterTwo.takeDamage(10)
-    assert(!characterTwo.isAlive, "Character should be dead")
-    assert(characterTwo.currentHP == 0, "Character HP is wrong")
-  }
-
   test("physicalAttack") {
     val characterOne: Character = new Character("Steve",50, 10, 5, 0, 25, 3)
     val characterTwo: Character = new Character("Rich",30, 30, 5, 5, 20, 5)
@@ -44,6 +24,37 @@ class TestCharacter extends FunSuite {
     characterOne.currentMP = 0
     characterOne.magicAttack(characterTwo)
     assert(equalDouble(characterTwo.currentHP, 13.0), "Character should not have taken any damage")
+  }
+
+  test("gainXP") {
+    val characterOne: Character = new Character("XPMonster", 10, 10, 10, 10, 10, 10)
+    assert(characterOne.getXP == 0, "XP should initialize as 0")
+    assert(characterOne.getLevel == 1, "Level should initialize to 1")
+
+    characterOne.gainXP(50)
+    assert(characterOne.getXP == 50, "XP did not gain correctly")
+
+    characterOne.gainXP(75)
+    assert(characterOne.getLevel == 2, "Character did not level up")
+    assert(characterOne.getXP == 25, "Character XP is incorrect")
+
+    // Test mutliple levels gained
+    val characterTwo: Character = new Character("LevelMonster", 10, 10, 10, 10, 10, 10)
+    assert(characterTwo.getXP == 0, "XP should initialize to 0")
+    assert(characterTwo.getLevel == 1, "XP should initialize to 1")
+
+    characterTwo.gainXP(450)
+    assert(characterTwo.getLevel == 5, "Character did not level up mutliply correctly")
+
+    val characterThree: Character = new Character("LevelMonster", 10, 10, 10, 10, 10, 10)
+    val characterFour: Character = new Character("LevelMonster", 10, 10, 10, 10, 10, 10)
+    assert(characterThree.determineXP(characterFour) == 45, "XP determined incorrectly")
+
+    characterThree.gainXP(characterThree.determineXP(characterFour))
+    assert(characterThree.getLevel == 1, "Character did not level correctly from determineXP")
+    assert(characterThree.getXP == 45, "Character XP not correct after determineXP")
+
+
   }
 
 }
